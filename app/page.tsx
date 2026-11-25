@@ -1,7 +1,6 @@
 import {
   ArrowRight,
   Check,
-  ChevronDown,
   CirclePlay,
   Globe2,
   Layers3,
