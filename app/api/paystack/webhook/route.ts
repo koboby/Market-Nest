@@ -26,6 +26,9 @@ export async function POST(request:Request){
     if(event.data.status!=="success"||Number(event.data.amount)!==Math.round(Number(order.total)*100)||event.data.currency!==order.currency)return NextResponse.json({error:"Payment details did not match the order."},{status:400});
     const {error}=await admin.rpc("complete_paid_order",{p_reference:event.data.reference,p_payload:event.data});
     if(error)return NextResponse.json({error:"Payment confirmation could not be saved."},{status:500});
+   }else{
+    const code=event.data.subscription?.subscription_code??event.data.subscription_code;
+    if(code){await admin.from("store_subscriptions").update({status:"active",current_period_start:new Date().toISOString(),current_period_end:event.data.subscription?.next_payment_date??null}).eq("provider_subscription_code",code);}
    }
   }
  }
