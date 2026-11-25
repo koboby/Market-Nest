@@ -1,7 +1,7 @@
 import "./products.css";
 import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
-import { ArrowLeft, Plus, Package, Search } from "lucide-react";
+import { ArrowLeft, Plus, Package } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
 
 export default async function ProductsPage({params}:{params:Promise<{storeId:string}>}) {
