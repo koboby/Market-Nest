@@ -1,7 +1,7 @@
 import "./workspace.css";
 import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
-import { ArrowLeft, ArrowRight, BarChart3, CreditCard, Globe2, ImagePlus, Layers3, Package, Palette, Settings2, Store, Users, ReceiptText } from "lucide-react";
+import { ArrowLeft, ArrowRight, BarChart3, CreditCard, Globe2, ImagePlus, Layers3, Package, Palette, Settings2, Store, Users, Receipt } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
 import type { CSSProperties } from "react";
 
@@ -18,7 +18,7 @@ export default async function StoreWorkspacePage({params}:{params:Promise<{store
     {title:"Products",description:"Add products, photos, prices and stock details.",icon:Package,href:`/stores/${storeId}/products`,value:String(products??0)},
     {title:"Collections",description:"Group products into collections customers can browse.",icon:Layers3,href:`/stores/${storeId}/collections`,value:String(collections??0)},
     {title:"Store design",description:"Choose a theme and customise your storefront.",icon:Palette,href:`/stores/${storeId}/editor`,value:"Editor"},
-    {title:"Orders",description:"Track customer payments and fulfilment.",icon:ReceiptText,href:`/stores/${storeId}/orders`,value:"Sales"},
+    {title:"Orders",description:"Track customer payments and fulfilment.",icon:Receipt,href:`/stores/${storeId}/orders`,value:"Sales"},
     {title:"Analytics",description:"See paid revenue, orders and customers.",icon:BarChart3,href:`/stores/${storeId}/analytics`,value:"Reports"},
     {title:"Customers",description:"View your customer list and purchase history.",icon:Users,href:`/stores/${storeId}/customers`,value:"CRM"},
     {title:"Subscription & billing",description:"Manage your Market Nest subscription.",icon:CreditCard,href:`/stores/${storeId}/billing`,value:"Billing"},
