@@ -1,16 +1,15 @@
+import "./workspace.css";
 import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
 import { ArrowLeft, ArrowRight, ImagePlus, Layers3, Package, Palette, Settings2, Store } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
 
 export default async function StoreWorkspacePage({params}:{params:Promise<{storeId:string}>}) {
-  const {storeId}=await params;
-  const supabase=await createClient();
-  const {data:{user}}=await supabase.auth.getUser();
+  const {storeId}=await params; const supabase=await createClient(); const {data:{user}}=await supabase.auth.getUser();
   if(!user) redirect("/login");
   const {data:store}=await supabase.from("stores").select("id,name,slug,status,currency,created_at").eq("id",storeId).maybeSingle();
   if(!store) notFound();
-  const [{count:products},{count:collections}] = await Promise.all([
+  const [{count:products},{count:collections}]=await Promise.all([
     supabase.from("products").select("*",{count:"exact",head:true}).eq("store_id",storeId),
     supabase.from("collections").select("*",{count:"exact",head:true}).eq("store_id",storeId),
   ]);
