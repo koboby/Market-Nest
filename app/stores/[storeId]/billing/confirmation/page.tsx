@@ -3,7 +3,7 @@ import "./confirmation.css";
 import {redirect} from "next/navigation";
 import {CheckCircle2,Clock3} from "lucide-react";
 import {createClient} from "@/lib/supabase/server";
-export default async function BillingConfirmation({params,searchParams}:{params:Promise<{storeId:string}>;searchParams:Promise<{reference?:string}>}){
+export default async function BillingConfirmation({params}:{params:Promise<{storeId:string}>}){
  const {storeId}=await params;const supabase=await createClient();const {data:{user}}=await supabase.auth.getUser();if(!user)redirect("/login");
  const {data:store}=await supabase.from("stores").select("id,name").eq("id",storeId).maybeSingle();if(!store)redirect("/dashboard");
  const {data:subscription}=await supabase.from("store_subscriptions").select("status,subscription_plans(name)").eq("store_id",storeId).in("status",["active","trialing"]).maybeSingle();
