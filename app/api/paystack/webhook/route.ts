@@ -40,7 +40,7 @@ export async function POST(request:Request){
      const {data:stores}=await admin.from("stores").select("id").eq("owner_id",owner.id);
      const storeIds=(stores??[]).map((item:any)=>item.id);
      if(storeIds.length){
-      const {data:pending}=await admin.from("store_subscriptions").select("id").eq("plan_id",plan.id).eq("status","trialing").in("store_id",storeIds).order("created_at",{ascending:false}).limit(1).maybeSingle();
+      const {data:pending}=await admin.from("store_subscriptions").select("id").eq("plan_id",plan.id).in("status",["trialing","active"]).in("store_id",storeIds).order("created_at",{ascending:false}).limit(1).maybeSingle();
       if(pending){await admin.from("store_subscriptions").update({status:"active",provider_customer_code:customerCode??null,provider_subscription_code:subscriptionCode,provider_email_token:emailToken??null,current_period_start:new Date().toISOString(),current_period_end:event.data?.next_payment_date??null}).eq("id",pending.id);}
      }
     }
