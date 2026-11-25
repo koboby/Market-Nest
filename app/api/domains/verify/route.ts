@@ -1,9 +1,11 @@
 import {NextResponse} from "next/server";
 import {createClient} from "@/lib/supabase/server";
+import {isRecord} from "@/lib/validation";
 export async function POST(request:Request){
  const supabase=await createClient();const {data:{user}}=await supabase.auth.getUser();if(!user)return NextResponse.json({error:"Sign in first."},{status:401});
- let body:any;try{body=await request.json();}catch{return NextResponse.json({error:"Invalid request."},{status:400});}
- const id=String(body.id??"");const {data:domain}=await supabase.from("store_domains").select("id,store_id,domain").eq("id",id).maybeSingle();if(!domain)return NextResponse.json({error:"Domain not found or access denied."},{status:404});
+ let rawBody:unknown;try{rawBody=await request.json();}catch{return NextResponse.json({error:"Invalid request."},{status:400});}
+ if(!isRecord(rawBody)||typeof rawBody.id!=="string")return NextResponse.json({error:"Domain ID is required."},{status:400});
+ const id=rawBody.id;const {data:domain}=await supabase.from("store_domains").select("id,store_id,domain").eq("id",id).maybeSingle();if(!domain)return NextResponse.json({error:"Domain not found or access denied."},{status:404});
  const token=process.env.VERCEL_TOKEN,projectId=process.env.VERCEL_PROJECT_ID;if(!token||!projectId)return NextResponse.json({error:"Vercel domain verification is not configured."},{status:503});
  const teamId=process.env.VERCEL_TEAM_ID;const query=teamId?`?teamId=${encodeURIComponent(teamId)}`:"";
  const response=await fetch(`https://api.vercel.com/v9/projects/${encodeURIComponent(projectId)}/domains/${encodeURIComponent(domain.domain)}${query}`,{headers:{"Authorization":`Bearer ${token}`},cache:"no-store"});
