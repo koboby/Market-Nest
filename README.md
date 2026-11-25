@@ -1,32 +1,54 @@
 # Market Nest
 
-A multi-tenant ecommerce SaaS that lets merchants create, customise, and publish beautiful online stores. This is a Shopify-style storefront platform — **not a POS or physical retail management system**.
+Market Nest is a multi-tenant ecommerce SaaS that lets merchants subscribe to a plan, build a beautiful online store, and sell products online. It is a hosted storefront platform — **not a POS or physical retail management system**.
 
-## Product direction
+## Product capabilities
 
-- Public marketing site, signup, onboarding, and subscription plans.
-- Private merchant workspaces for products, collections, customers, orders, domains, analytics, and store settings.
-- Visual storefront editor with section-based page building, live preview, responsive controls, reusable themes, and publishing.
-- Public hosted storefronts at `/s/<store-slug>`, with custom subdomains and custom-domain support planned.
-- Platform-owner admin for merchants, plans, subscriptions, payments, usage, and support.
-- Tenant isolation enforced in PostgreSQL with Row Level Security.
-- Image uploads are converted to WebP and must be **strictly smaller than 100 KB**. Supabase Storage independently rejects files at or above 99,999 bytes.
+- Public marketing homepage, merchant authentication, onboarding and store workspace.
+- Product catalogue with editing, inventory, SKU, and product variants.
+- Collections for organising the storefront catalogue.
+- Visual storefront editor with section editing, drag-and-drop ordering, desktop/mobile preview, theme colours, draft saving and publishing.
+- Hosted storefronts at `/s/<store-slug>`, with shopping bag and customer checkout.
+- Paystack shopper payments with signed webhooks, server-side verification, paid-order processing and stock updates.
+- Merchant orders, customers, analytics, billing, settings, media library and custom-domain workspaces.
+- Platform-owner area for creating monthly subscription plans and linking Paystack recurring plan codes.
+- Tenant isolation enforced with PostgreSQL Row Level Security.
+- Every uploaded image is converted to WebP and must be strictly smaller than 100 KB. Supabase Storage enforces a 99,999-byte ceiling and accepts WebP only.
 
 ## Stack
 
-- Next.js App Router + TypeScript
-- Supabase Auth, PostgreSQL, Storage, and Row Level Security
-- Paystack for recurring subscription billing and shopper checkout (planned)
-- Vercel deployment
+- Next.js App Router, React and TypeScript
+- Supabase Auth, PostgreSQL, Storage and Row Level Security
+- Paystack for shopper payments and recurring merchant subscriptions
+- Vercel deployment and optional Vercel domain provisioning
 
-## Local development
+## Local setup
 
-1. Install Node.js 20.9+.
+1. Install Node.js 20.9 or newer.
 2. Copy `.env.example` to `.env.local`.
-3. Run `npm install`.
-4. Run `npm run dev`.
+3. Install dependencies with `npm install`.
+4. Start the app with `npm run dev`.
 
-The example environment already points to the dedicated Market Nest Supabase project. The publishable key is intended for browser use. Never add a Supabase secret/service-role key to a `NEXT_PUBLIC_*` variable or commit one to Git.
+The example environment points at the dedicated Market Nest Supabase project. The publishable key is safe for browser use when RLS is enabled. Never expose the Supabase service-role key or Paystack secret key through a `NEXT_PUBLIC_*` variable or commit a real secret to Git.
+
+## Required deployment environment
+
+- `NEXT_PUBLIC_SUPABASE_URL`
+- `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY`
+- `SUPABASE_SERVICE_ROLE_KEY` — server only; required for secure checkout, webhook processing and platform administration.
+- `PAYSTACK_SECRET_KEY` — server only; use a Paystack test key for initial testing.
+- `PLATFORM_ADMIN_EMAILS` — comma-separated allowlist of platform-owner login emails.
+- `NEXT_PUBLIC_APP_URL` — canonical deployed application URL.
+- `VERCEL_TOKEN`, `VERCEL_PROJECT_ID`, and optional `VERCEL_TEAM_ID` — only required for automatic custom-domain provisioning.
+
+## Paystack configuration
+
+1. Configure a monthly plan in Market Nest's `/platform` admin area. This creates the recurring plan in Paystack and stores its plan code.
+2. Set the Paystack webhook URL to `https://YOUR_DOMAIN/api/paystack/webhook`.
+3. Enable the subscription events and `charge.success` events in Paystack.
+4. Use test-mode credentials and test transactions before enabling live payments.
+
+Paystack subscription plans must exist at Paystack before merchants can subscribe. Paystack manages recurring billing and emits events such as `subscription.create`, `charge.success`, `invoice.payment_failed`, and cancellation events. See [Paystack subscriptions](https://paystack.com/docs/payments/subscriptions/) and [webhooks](https://paystack.com/docs/payments/webhooks/).
 
 ## Validation
 
@@ -36,24 +58,26 @@ The example environment already points to the dedicated Market Nest Supabase pro
 
 GitHub Actions runs these checks on pushes and pull requests to `main`.
 
-## Current build status
+## Current implementation status
 
-- Marketing homepage and responsive brand system.
-- Supabase Auth client/server setup and session refresh proxy.
-- Merchant signup and sign-in screens.
-- Merchant dashboard, store creation, and store workspace.
-- Product and collection creation/management screens.
-- Image-to-WebP compression helper and private Storage upload pipeline.
-- Store page editor with live preview, section editing/reordering, theme colour controls, draft saving, and publishing.
-- Public storefront renderer for published stores and active products.
-- Database migrations for merchant data, tenant RLS, storage access, and public storefront access.
+- Marketing site, authentication, merchant dashboard and store creation.
+- Products, collections, product editing, stock, SKU and variants.
+- WebP compression pipeline and private image storage with a strict sub-100-KB upload limit.
+- Visual page editor, responsive preview, section ordering, theme settings and publishing.
+- Public storefront, shopping bag, delivery details and Paystack checkout.
+- Orders, customers, payment events, stock decrement after confirmed payment and revenue analytics.
+- Merchant subscription schema, Paystack plan creation, recurring checkout and webhook lifecycle handling.
+- Platform plan management, store settings, media library and custom-domain provisioning hooks.
+- CI workflow and Supabase security/performance advisor checks.
 
-## Remaining product phases
+## Still requires external configuration and live testing
 
-1. Product editing, variants, stock controls, collection assignment, and customer/order models.
-2. Full drag-and-drop editor, more templates, responsive section settings, and custom domains.
-3. Cart, checkout, Paystack payments, and recurring subscription enforcement.
-4. Merchant analytics, platform-owner admin, support tools, and audit logs.
-5. End-to-end testing, auth redirect configuration, Vercel deployment, and production hardening.
+- Add the server-only Supabase service-role key and Paystack secret key to the deployment environment.
+- Add the platform owner email(s) to `PLATFORM_ADMIN_EMAILS`.
+- Create the Paystack recurring plans from `/platform`, then configure the Paystack webhook URL.
+- Configure Vercel environment variables and domain provisioning credentials if custom domains are needed.
+- Verify Supabase Auth Site URL and allowed redirect URLs for the deployed domains.
+- Run the GitHub Actions checks and complete real Paystack test-mode checkout/subscription cycles.
+- Complete deeper end-to-end testing, shipping rates, discounts, refunds, email notifications, and custom domain DNS verification.
 
 No POS, cash-register, or physical-shop checkout modules are in scope.
