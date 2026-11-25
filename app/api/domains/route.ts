@@ -1,9 +1,11 @@
 import {NextResponse} from "next/server";
 import {createClient} from "@/lib/supabase/server";
+import {isRecord} from "@/lib/validation";
 export async function POST(request:Request){
  const supabase=await createClient();const {data:{user}}=await supabase.auth.getUser();if(!user)return NextResponse.json({error:"Sign in first."},{status:401});
- let body:any;try{body=await request.json();}catch{return NextResponse.json({error:"Invalid request."},{status:400});}
- const storeId=String(body.storeId??""),domain=String(body.domain??"").trim().toLowerCase().replace(/^https?:\/\//,"").replace(/\/$/,"");
+ let rawBody:unknown;try{rawBody=await request.json();}catch{return NextResponse.json({error:"Invalid request."},{status:400});}
+ if(!isRecord(rawBody)||typeof rawBody.storeId!=="string"||typeof rawBody.domain!=="string")return NextResponse.json({error:"Store ID and domain are required."},{status:400});
+ const storeId=rawBody.storeId,domain=rawBody.domain.trim().toLowerCase().replace(/^https?:\/\//,"").replace(/\/$/,"");
  if(!/^[a-z0-9](?:[a-z0-9.-]{0,251}[a-z0-9])?$/.test(domain)||!domain.includes(".")||domain.includes(".."))return NextResponse.json({error:"Enter a valid domain name without a URL path."},{status:400});
  const {data:store}=await supabase.from("stores").select("id").eq("id",storeId).maybeSingle();if(!store)return NextResponse.json({error:"Store not found or access denied."},{status:404});
  const token=process.env.VERCEL_TOKEN,projectId=process.env.VERCEL_PROJECT_ID;if(!token||!projectId)return NextResponse.json({error:"Custom domain connection requires VERCEL_TOKEN and VERCEL_PROJECT_ID in the deployment environment."},{status:503});
