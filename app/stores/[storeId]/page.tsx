@@ -1,7 +1,7 @@
 import "./workspace.css";
 import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
-import { ArrowLeft, ArrowRight, ImagePlus, Layers3, Package, Palette, Settings2, Store } from "lucide-react";
+import { ArrowLeft, ArrowRight, CreditCard, ImagePlus, Layers3, Package, Palette, Settings2, Store, Users, ReceiptText } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
 
 export default async function StoreWorkspacePage({params}:{params:Promise<{storeId:string}>}) {
@@ -17,6 +17,9 @@ export default async function StoreWorkspacePage({params}:{params:Promise<{store
     {title:"Products",description:"Add products, photos, prices and stock details.",icon:Package,href:`/stores/${storeId}/products`,value:String(products??0)},
     {title:"Collections",description:"Group products into collections customers can browse.",icon:Layers3,href:`/stores/${storeId}/collections`,value:String(collections??0)},
     {title:"Store design",description:"Choose a theme and customise your storefront.",icon:Palette,href:`/stores/${storeId}/editor`,value:"Editor"},
+    {title:"Orders",description:"Track customer payments and fulfilment.",icon:ReceiptText,href:`/stores/${storeId}/orders`,value:"Sales"},
+    {title:"Customers",description:"View your customer list and purchase history.",icon:Users,href:`/stores/${storeId}/customers`,value:"CRM"},
+    {title:"Subscription & billing",description:"Manage your Market Nest subscription.",icon:CreditCard,href:`/stores/${storeId}/billing`,value:"Billing"},
     {title:"Media library",description:"Upload optimised images under 100 KB.",icon:ImagePlus,href:"#",value:"100 KB max"},
     {title:"Store settings",description:"Manage your store name, address and preferences.",icon:Settings2,href:"#",value:"Settings"},
   ];
