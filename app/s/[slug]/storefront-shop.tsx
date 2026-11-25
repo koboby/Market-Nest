@@ -5,7 +5,7 @@ type Product={id:string;title:string;description:string|null;price:number|string
 export default function StorefrontShop({storeSlug,products,currency}:{storeSlug:string;products:Product[];currency:string}){
  const [cart,setCart]=useState<Record<string,number>>({});const [selected,setSelected]=useState<Record<string,string>>({});const [open,setOpen]=useState(false);const [name,setName]=useState("");const [email,setEmail]=useState("");const [phone,setPhone]=useState("");const [address,setAddress]=useState("");const [busy,setBusy]=useState(false);const [error,setError]=useState("");
  const count=Object.values(cart).reduce((a,b)=>a+b,0);
- const lineDetails=Object.entries(cart).map(([key,quantity])=>{const [productId,variantId]=key.split("::");const product=products.find(p=>p.id===productId);const variant=product?.variants.find(v=>v.id===variantId);return {key,quantity,product,variant,price:Number(variant?.price??product?.price??0)};}).filter(line=>line.product);
+ const lineDetails=Object.entries(cart).map(([key,quantity])=>{const [productId,variantId]=key.split("::");const product=products.find(p=>p.id===productId);const variant=product?.variants.find(v=>v.id===variantId);return {key,quantity,product,variant,price:Number(variant?.price??product?.price??0)};}).filter(line=>line.product&&line.quantity>0);
  const total=useMemo(()=>lineDetails.reduce((sum,line)=>sum+line.price*line.quantity,0),[lineDetails]);
  const money=(value:number)=>new Intl.NumberFormat("en-NG",{style:"currency",currency:currency||"NGN",maximumFractionDigits:2}).format(value);
  function selectedVariant(product:Product){const id=selected[product.id]??product.variants[0]?.id;return product.variants.find(v=>v.id===id)??null;}
