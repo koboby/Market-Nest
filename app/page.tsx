@@ -49,12 +49,9 @@ const features = [
 ];
 
 const templates = [
-  { name: "The Edit", type: "Fashion & apparel", className: "template-fashion", label: "NEW SEASON", title: "Made to
-move with you", action: "Discover the collection" },
-  { name: "Sunday Market", type: "Home & lifestyle", className: "template-home", label: "SLOW LIVING", title: "A softer way
-to live", action: "Explore the edit" },
-  { name: "Good Form", type: "Beauty & wellness", className: "template-beauty", label: "YOUR DAILY RITUAL", title: "Feel good
-in your skin", action: "Shop essentials" },
+  { name: "The Edit", type: "Fashion & apparel", className: "template-fashion", label: "NEW SEASON", title: "Made to\nmove with you", action: "Discover the collection" },
+  { name: "Sunday Market", type: "Home & lifestyle", className: "template-home", label: "SLOW LIVING", title: "A softer way\nto live", action: "Explore the edit" },
+  { name: "Good Form", type: "Beauty & wellness", className: "template-beauty", label: "YOUR DAILY RITUAL", title: "Feel good\nin your skin", action: "Shop essentials" },
 ];
 
 function BrandMark() {
@@ -211,7 +208,7 @@ export default function Home() {
 
       <section className="pricing-banner" id="pricing">
         <div><SectionLabel>SIMPLE, GROW-WITH-YOU PLANS</SectionLabel><h2>Your next big thing<br />deserves a <em>great start.</em></h2><p>Start with what you need. Upgrade as your business grows. No long-term commitment required.</p></div>
-        <div className="pricing-side"><div className="price-note"><span>Plans designed for every stage</span><strong>From ₦5,000 <small>/ month</small></strong><small>Monthly and annual options</small></div><a className="button button-dark" href="/pricing">Explore plans <ArrowRight size={16} /></a><span className="pricing-footnote"><Check size={14} /> No setup fee · Cancel anytime</span></div>
+        <div className="pricing-side"><div className="price-note"><span>Plans designed for every stage</span><strong>Monthly plans <small>for every stage</small></strong><small>Monthly and annual options</small></div><a className="button button-dark" href="/pricing">Explore plans <ArrowRight size={16} /></a><span className="pricing-footnote"><Check size={14} /> No setup fee · Cancel anytime</span></div>
       </section>
 
       <footer className="site-footer">
