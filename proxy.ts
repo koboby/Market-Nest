@@ -18,6 +18,31 @@ export async function proxy(request: NextRequest) {
     },
   });
   await supabase.auth.getUser();
+
+  const host = request.headers.get("host")?.split(":")[0]?.toLowerCase();
+  const configuredHost = process.env.NEXT_PUBLIC_APP_URL
+    ? new URL(process.env.NEXT_PUBLIC_APP_URL).host.toLowerCase()
+    : "";
+  const isPlatformHost = !host || host === "localhost" || host === "127.0.0.1" ||
+    host === configuredHost || host.endsWith(".vercel.app") || host.endsWith(".marketnest.store");
+
+  if (!isPlatformHost && request.nextUrl.pathname === "/") {
+    const { data: domain } = await supabase
+      .from("store_domains")
+      .select("store_id")
+      .eq("domain", host)
+      .eq("verification_status", "verified")
+      .maybeSingle();
+    if (domain) {
+      const { data: store } = await supabase
+        .from("stores")
+        .select("slug")
+        .eq("id", domain.store_id)
+        .eq("status", "published")
+        .maybeSingle();
+      if (store) return NextResponse.rewrite(new URL(`/s/${store.slug}`, request.url));
+    }
+  }
   return response;
 }
 
