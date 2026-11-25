@@ -12,7 +12,7 @@ export default function SignupPage() {
   const [error,setError] = useState(""); const [message,setMessage] = useState(""); const [loading,setLoading] = useState(false);
   async function handleSubmit(event:FormEvent<HTMLFormElement>) {
     event.preventDefault(); setError(""); setMessage(""); setLoading(true);
-    const {data,error:signupError}=await createClient().auth.signUp({email,password,options:{data:{full_name:name},emailRedirectTo:`${window.location.origin}/dashboard`}});
+    const {data,error:signupError}=await createClient().auth.signUp({email,password,options:{data:{full_name:name},emailRedirectTo:`${window.location.origin}/auth/callback?next=/dashboard`}});
     setLoading(false);
     if(signupError) return setError(signupError.message);
     if(data.session){router.push("/dashboard");router.refresh();}
