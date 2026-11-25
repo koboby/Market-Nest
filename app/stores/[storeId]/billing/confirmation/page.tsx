@@ -1,4 +1,5 @@
 import Link from "next/link";
+import "./confirmation.css";
 import {redirect} from "next/navigation";
 import {CheckCircle2,Clock3} from "lucide-react";
 import {createClient} from "@/lib/supabase/server";
