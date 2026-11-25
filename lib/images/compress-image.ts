@@ -69,8 +69,8 @@ export async function compressImageUnder100KB(file: File): Promise<File> {
       }
     }
 
-    width = Math.max(240, Math.round(width * 0.78));
-    height = Math.max(240, Math.round(height * 0.78));
+    width = Math.max(1, Math.round(width * 0.78));
+    height = Math.max(1, Math.round(height * 0.78));
   }
 
   if (best && best.size < MAX_IMAGE_BYTES) {
