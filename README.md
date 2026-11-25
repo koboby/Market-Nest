@@ -81,3 +81,18 @@ GitHub Actions runs these checks on pushes and pull requests to `main`.
 - Complete deeper end-to-end testing, shipping rates, discounts, refunds, email notifications, and custom domain DNS verification.
 
 No POS, cash-register, or physical-shop checkout modules are in scope.
+
+## Manual acceptance checklist
+
+Use Paystack test mode and a test deployment before enabling live payments.
+
+1. Sign up, confirm the email, and sign in.
+2. Create a store and open its workspace.
+3. Add a collection, create a product, assign it to that collection, and add a product variant.
+4. Upload a large JPG or PNG and confirm the resulting WebP file is below 99,999 bytes.
+5. Publish the store and open `/s/<store-slug>` in a private browser session.
+6. Add a base product and a variant to the bag, complete the delivery form, and test a Paystack checkout.
+7. Confirm the signed webhook changes the order to paid, updates customer totals, and decrements the correct product or variant inventory exactly once.
+8. Create a monthly plan in `/platform`, subscribe a test merchant, and verify renewal/failure/cancellation webhook handling.
+9. Add a test custom domain in Vercel, configure its DNS, verify it, and open the published store on that hostname.
+10. Test merchant isolation with two separate accounts and confirm neither can read or edit the other's store data.
