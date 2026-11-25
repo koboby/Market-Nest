@@ -2,12 +2,12 @@
 import "./edit-product.css";
 import Link from "next/link";
 import {useEffect,useState,type FormEvent} from "react";
-import {useParams,useRouter} from "next/navigation";
+import {useParams} from "next/navigation";
 import {createClient} from "@/lib/supabase/client";
 import {ArrowLeft,Plus,Save,Trash2} from "lucide-react";
 type Variant={id:string;title:string;sku:string|null;price:number;inventory_quantity:number;is_active:boolean};
 export default function EditProductPage(){
- const {storeId,productId}=useParams<{storeId:string;productId:string}>();const router=useRouter();
+ const {storeId,productId}=useParams<{storeId:string;productId:string}>();
  const [title,setTitle]=useState("");const [collections,setCollections]=useState<Array<{id:string;title:string}>>([]);const [collectionId,setCollectionId]=useState("");const [description,setDescription]=useState("");const [price,setPrice]=useState("");const [sku,setSku]=useState("");const [inventory,setInventory]=useState("0");const [status,setStatus]=useState("draft");const [variants,setVariants]=useState<Variant[]>([]);const [variantTitle,setVariantTitle]=useState("");const [variantSku,setVariantSku]=useState("");const [variantPrice,setVariantPrice]=useState("");const [variantStock,setVariantStock]=useState("0");const [loading,setLoading]=useState(true);const [saving,setSaving]=useState(false);const [error,setError]=useState("");const [message,setMessage]=useState("");
  useEffect(()=>{let live=true;(async()=>{const supabase=createClient();const [{data:product},{data:rows},{data:collectionRows}]=await Promise.all([supabase.from("products").select("title,description,price,sku,inventory_quantity,status,collection_id").eq("id",productId).eq("store_id",storeId).maybeSingle(),supabase.from("product_variants").select("id,title,sku,price,inventory_quantity,is_active").eq("product_id",productId).eq("store_id",storeId).order("created_at"),supabase.from("collections").select("id,title").eq("store_id",storeId).order("title")]);if(live){setCollections(collectionRows??[]);}if(live&&product){setCollectionId(product.collection_id??"");setTitle(product.title);setDescription(product.description??"");setPrice(String(product.price));setSku(product.sku??"");setInventory(String(product.inventory_quantity));setStatus(product.status);setVariants(rows??[]);}if(live)setLoading(false);})();return()=>{live=false};},[storeId,productId]);
  async function save(e:FormEvent){e.preventDefault();setSaving(true);setError("");setMessage("");const supabase=createClient();const {error}=await supabase.from("products").update({title:title.trim(),description:description.trim()||null,price:Number(price),collection_id:collectionId||null,sku:sku.trim()||null,inventory_quantity:Number(inventory),status}).eq("id",productId).eq("store_id",storeId);setSaving(false);if(error)setError(error.message);else setMessage("Product changes saved.");}
