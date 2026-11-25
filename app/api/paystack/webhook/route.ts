@@ -27,6 +27,24 @@ export async function POST(request:Request){
    }
   }
  }
+ if(event.event==="subscription.create"){
+  const planCode=event.data?.plan?.plan_code;const customerEmail=event.data?.customer?.email?.toLowerCase();const customerCode=event.data?.customer?.customer_code;const subscriptionCode=event.data?.subscription_code;const emailToken=event.data?.email_token;
+  if(planCode&&customerEmail&&subscriptionCode){
+   const {data:plan}=await admin.from("subscription_plans").select("id").eq("provider_plan_code",planCode).maybeSingle();
+   if(plan){
+    const {data:users}=await admin.auth.admin.listUsers({page:1,perPage:1000});
+    const owner=users?.users?.find((item:any)=>item.email?.toLowerCase()===customerEmail);
+    if(owner){
+     const {data:stores}=await admin.from("stores").select("id").eq("owner_id",owner.id);
+     const storeIds=(stores??[]).map((item:any)=>item.id);
+     if(storeIds.length){
+      const {data:pending}=await admin.from("store_subscriptions").select("id").eq("plan_id",plan.id).eq("status","trialing").in("store_id",storeIds).order("created_at",{ascending:false}).limit(1).maybeSingle();
+      if(pending){await admin.from("store_subscriptions").update({status:"active",provider_customer_code:customerCode??null,provider_subscription_code:subscriptionCode,provider_email_token:emailToken??null,current_period_start:new Date().toISOString(),current_period_end:event.data?.next_payment_date??null}).eq("id",pending.id);}
+     }
+    }
+   }
+  }
+ }
  if(event.event==="subscription.disable"||event.event==="subscription.not_renew"){
   const code=event.data?.subscription_code;
   if(code){const {error}=await admin.from("store_subscriptions").update(event.event==="subscription.disable"?{status:"cancelled"}:{cancel_at_period_end:true}).eq("provider_subscription_code",code);if(error)return NextResponse.json({error:"Subscription update failed."},{status:500});}
