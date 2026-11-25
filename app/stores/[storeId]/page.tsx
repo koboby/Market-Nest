@@ -1,7 +1,7 @@
 import "./workspace.css";
 import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
-import { ArrowLeft, ArrowRight, CreditCard, ImagePlus, Layers3, Package, Palette, Settings2, Store, Users, ReceiptText } from "lucide-react";
+import { ArrowLeft, ArrowRight, CreditCard, Globe2, ImagePlus, Layers3, Package, Palette, Settings2, Store, Users, ReceiptText } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
 
 export default async function StoreWorkspacePage({params}:{params:Promise<{storeId:string}>}) {
@@ -20,8 +20,9 @@ export default async function StoreWorkspacePage({params}:{params:Promise<{store
     {title:"Orders",description:"Track customer payments and fulfilment.",icon:ReceiptText,href:`/stores/${storeId}/orders`,value:"Sales"},
     {title:"Customers",description:"View your customer list and purchase history.",icon:Users,href:`/stores/${storeId}/customers`,value:"CRM"},
     {title:"Subscription & billing",description:"Manage your Market Nest subscription.",icon:CreditCard,href:`/stores/${storeId}/billing`,value:"Billing"},
-    {title:"Media library",description:"Upload optimised images under 100 KB.",icon:ImagePlus,href:"#",value:"100 KB max"},
-    {title:"Store settings",description:"Manage your store name, address and preferences.",icon:Settings2,href:"#",value:"Settings"},
+    {title:"Media library",description:"Browse your compressed WebP product images.",icon:ImagePlus,href:`/stores/${storeId}/media`,value:"100 KB max"},
+    {title:"Custom domains",description:"Connect your own branded storefront domain.",icon:Globe2,href:`/stores/${storeId}/domains`,value:"Domains"},
+    {title:"Store settings",description:"Manage your store name and preferences.",icon:Settings2,href:`/stores/${storeId}/settings`,value:"Settings"},
   ];
   return <main className="workspace-shell"><header className="workspace-top"><Link href="/dashboard"><ArrowLeft size={16}/> All stores</Link><Link href="/" className="workspace-brand">market<span>nest</span></Link></header><section className="workspace-intro"><div className="workspace-store-icon"><Store size={24}/></div><span className="workspace-eyebrow">STORE WORKSPACE</span><h1>{store.name}</h1><p>marketnest.store/{store.slug}</p><span className="workspace-status">{store.status}</span></section><section className="workspace-tools"><div className="workspace-heading"><div><span className="workspace-eyebrow">YOUR STORE</span><h2>Build something lovely.</h2></div><span>Created {new Date(store.created_at).toLocaleDateString("en-NG",{day:"numeric",month:"short",year:"numeric"})}</span></div><div className="workspace-grid">{tools.map(({title,description,icon:Icon,href,value})=><Link href={href} className="workspace-tool" key={title}><div className="workspace-tool-top"><span><Icon size={20}/></span><b>{value}</b></div><h3>{title}</h3><p>{description}</p><span className="workspace-tool-link">Open <ArrowRight size={15}/></span></Link>)}</div></section></main>;
 }
