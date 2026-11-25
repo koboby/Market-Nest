@@ -15,7 +15,9 @@ export async function POST(request:Request){
   if(metadata.purpose==="market_nest_subscription"&&metadata.store_id&&metadata.plan_id){
    if(event.data.status!=="success")return NextResponse.json({error:"Subscription payment was not successful."},{status:400});
    const {data:existing}=await admin.from("store_subscriptions").select("id").eq("store_id",metadata.store_id).in("status",["trialing","active","past_due"]).maybeSingle();
-   const subscription={store_id:metadata.store_id,plan_id:metadata.plan_id,status:"active",billing_provider:"paystack",provider_customer_code:event.data.customer?.customer_code??null,provider_subscription_code:event.data.subscription?.subscription_code??event.data.subscription_code??null,current_period_start:new Date().toISOString(),current_period_end:event.data.subscription?.next_payment_date??null};
+   const subscription:any={store_id:metadata.store_id,plan_id:metadata.plan_id,status:"active",billing_provider:"paystack",provider_customer_code:event.data.customer?.customer_code??null,current_period_start:new Date().toISOString()};
+   const subscriptionCode=event.data.subscription?.subscription_code??event.data.subscription_code;if(subscriptionCode)subscription.provider_subscription_code=subscriptionCode;
+   const nextPayment=event.data.subscription?.next_payment_date;if(nextPayment)subscription.current_period_end=nextPayment;
    const result=existing?await admin.from("store_subscriptions").update(subscription).eq("id",existing.id):await admin.from("store_subscriptions").insert(subscription);
    if(result.error)return NextResponse.json({error:"Subscription could not be activated."},{status:500});
   }else{
