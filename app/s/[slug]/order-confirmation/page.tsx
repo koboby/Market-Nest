@@ -7,8 +7,10 @@ export default async function OrderConfirmation({params,searchParams}:{params:Pr
  const admin=createAdminClient();const {data:order}=await admin.from("orders").select("id,store_id,total,currency,payment_status,payment_reference,stores!inner(slug,name)").eq("payment_reference",reference).maybeSingle();
  if(!order||((order.stores as any).slug!==slug))redirect(`/s/${slug}`);
  if(order.payment_status==="pending"&&process.env.PAYSTACK_SECRET_KEY){
-  const response=await fetch(`https://api.paystack.co/transaction/verify/${encodeURIComponent(reference)}`,{headers:{Authorization:`Bearer ${process.env.PAYSTACK_SECRET_KEY}`},cache:"no-store"});
-  if(response.ok){const result=await response.json();if(result.status&&result.data?.status==="success"&&Number(result.data.amount)===Math.round(Number(order.total)*100)&&result.data.currency===order.currency){await admin.rpc("complete_paid_order",{p_reference:reference,p_payload:result.data});}}
+  try{
+   const response=await fetch(`https://api.paystack.co/transaction/verify/${encodeURIComponent(reference)}`,{headers:{Authorization:`Bearer ${process.env.PAYSTACK_SECRET_KEY}`},cache:"no-store"});
+   if(response.ok){const result=await response.json();if(result.status&&result.data?.status==="success"&&Number(result.data.amount)===Math.round(Number(order.total)*100)&&result.data.currency===order.currency){await admin.rpc("complete_paid_order",{p_reference:reference,p_payload:result.data});}}
+  }catch{ /* The signed webhook remains the authoritative confirmation path. */ }
  }
  const {data:latest}=await admin.from("orders").select("payment_status,order_number").eq("id",order.id).single();
  const paid=latest?.payment_status==="paid";
