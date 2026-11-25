@@ -14,7 +14,7 @@ export default async function StoreWorkspacePage({params}:{params:Promise<{store
     supabase.from("collections").select("*",{count:"exact",head:true}).eq("store_id",storeId),
   ]);
   const tools=[
-    {title:"Products",description:"Add products, photos, prices and stock details.",icon:Package,href:"#",value:String(products??0)},
+    {title:"Products",description:"Add products, photos, prices and stock details.",icon:Package,href:`/stores/${storeId}/products`,value:String(products??0)},
     {title:"Collections",description:"Group products into collections customers can browse.",icon:Layers3,href:"#",value:String(collections??0)},
     {title:"Store design",description:"Choose a theme and customise your storefront.",icon:Palette,href:"#",value:"Editor"},
     {title:"Media library",description:"Upload optimised images under 100 KB.",icon:ImagePlus,href:"#",value:"100 KB max"},
