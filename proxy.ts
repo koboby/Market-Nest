@@ -23,7 +23,7 @@ export async function proxy(request: NextRequest) {
   const configuredHost = process.env.NEXT_PUBLIC_APP_URL
     ? new URL(process.env.NEXT_PUBLIC_APP_URL).host.toLowerCase()
     : "";
-  const isPlatformHost = !host || host === "localhost" || host === "127.0.0.1" ||
+  const isPlatformHost = !host || host === "localhost" || host === "127.0.0.1" || host === "marketnest.store" ||
     host === configuredHost || host.endsWith(".vercel.app") || host.endsWith(".marketnest.store");
 
   if (!isPlatformHost && request.nextUrl.pathname === "/") {
