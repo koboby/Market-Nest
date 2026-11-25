@@ -1,5 +1,6 @@
 import {NextResponse} from "next/server";
 import {createClient} from "@/lib/supabase/server";
+import {createAdminClient} from "@/lib/supabase/admin";
 export async function POST(request:Request){
  const secret=process.env.PAYSTACK_SECRET_KEY;if(!secret)return NextResponse.json({error:"Subscription payments are not configured yet."},{status:503});
  const supabase=await createClient();const {data:{user}}=await supabase.auth.getUser();if(!user)return NextResponse.json({error:"Please sign in."},{status:401});
@@ -13,8 +14,12 @@ export async function POST(request:Request){
  if(!store||!plan)return NextResponse.json({error:"Store or plan not found."},{status:404});
  if(existing?.status==="active")return NextResponse.json({error:"This store already has an active subscription."},{status:409});
  if(!plan.provider_plan_code)return NextResponse.json({error:"This plan is not connected to a Paystack recurring plan yet."},{status:409});
+ const admin=createAdminClient();
+ const pending={store_id:storeId,plan_id:plan.id,status:"trialing",billing_provider:"paystack",current_period_start:new Date().toISOString()};
+ const {error:pendingError}=existing?await admin.from("store_subscriptions").update(pending).eq("id",existing.id):await admin.from("store_subscriptions").insert(pending);
+ if(pendingError)return NextResponse.json({error:"Could not prepare your subscription."},{status:500});
  const origin=new URL(request.url).origin;
  const response=await fetch("https://api.paystack.co/transaction/initialize",{method:"POST",headers:{"Authorization":`Bearer ${secret}`,"Content-Type":"application/json"},body:JSON.stringify({email:user.email,plan:plan.provider_plan_code,amount:Math.round(Number(plan.price_monthly)*100),currency:plan.currency||"NGN",callback_url:`${origin}/stores/${storeId}/billing/confirmation`,metadata:{purpose:"market_nest_subscription",store_id:storeId,plan_id:plan.id,plan_name:plan.name}})});
- const result=await response.json();if(!response.ok||!result.status||!result.data?.authorization_url)return NextResponse.json({error:result.message||"Could not start subscription payment."},{status:502});
+ const result=await response.json();if(!response.ok||!result.status||!result.data?.authorization_url){await admin.from("store_subscriptions").update({status:"expired"}).eq("store_id",storeId).eq("plan_id",plan.id).eq("status","trialing");return NextResponse.json({error:result.message||"Could not start subscription payment."},{status:502});}
  return NextResponse.json({authorizationUrl:result.data.authorization_url});
 }
