@@ -1,11 +1,13 @@
 import {NextResponse} from "next/server";
 import {createClient} from "@/lib/supabase/server";
 import {createAdminClient} from "@/lib/supabase/admin";
+import {isRecord} from "@/lib/validation";
 export async function POST(request:Request){
  const secret=process.env.PAYSTACK_SECRET_KEY;if(!secret)return NextResponse.json({error:"Subscription payments are not configured yet."},{status:503});
  const supabase=await createClient();const {data:{user}}=await supabase.auth.getUser();if(!user)return NextResponse.json({error:"Please sign in."},{status:401});
- let body:any;try{body=await request.json();}catch{return NextResponse.json({error:"Invalid request."},{status:400});}
- const {storeId,planId}=body??{};if(typeof storeId!=="string"||typeof planId!=="string")return NextResponse.json({error:"Choose a valid store and plan."},{status:400});
+ let rawBody:unknown;try{rawBody=await request.json();}catch{return NextResponse.json({error:"Invalid request."},{status:400});}
+ if(!isRecord(rawBody)||typeof rawBody.storeId!=="string"||typeof rawBody.planId!=="string")return NextResponse.json({error:"Choose a valid store and plan."},{status:400});
+ const storeId=rawBody.storeId;const planId=rawBody.planId;if(typeof storeId!=="string"||typeof planId!=="string")return NextResponse.json({error:"Choose a valid store and plan."},{status:400});
  const [{data:store},{data:plan},{data:existing}]=await Promise.all([
   supabase.from("stores").select("id,name,owner_id").eq("id",storeId).maybeSingle(),
   supabase.from("subscription_plans").select("id,name,price_monthly,currency,provider_plan_code").eq("id",planId).eq("is_active",true).maybeSingle(),
