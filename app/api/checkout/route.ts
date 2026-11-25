@@ -30,8 +30,14 @@ export async function POST(request:Request){
  const {error:itemError}=await admin.from("order_items").insert(orderItems);
  if(itemError){await admin.from("orders").delete().eq("id",order.id);return NextResponse.json({error:"Could not prepare your order."},{status:500});}
  const origin=new URL(request.url).origin;
- const paystack=await fetch("https://api.paystack.co/transaction/initialize",{method:"POST",headers:{"Authorization":`Bearer ${secret}`,"Content-Type":"application/json"},body:JSON.stringify({email:customerEmail,amount:Math.round(subtotal*100),currency:store.currency||"NGN",reference,callback_url:`${origin}/s/${store.slug}/order-confirmation?reference=${encodeURIComponent(reference)}`,metadata:{order_id:order.id,store_id:store.id,store_slug:store.slug,customer_name:name.trim()}})});
- const result=await paystack.json();
- if(!paystack.ok||!result.status||!result.data?.authorization_url){await admin.from("orders").delete().eq("id",order.id);return NextResponse.json({error:result.message||"Payment could not be started. Please try again."},{status:502});}
+ let result:any;
+ try{
+  const paystack=await fetch("https://api.paystack.co/transaction/initialize",{method:"POST",headers:{"Authorization":`Bearer ${secret}`,"Content-Type":"application/json"},body:JSON.stringify({email:customerEmail,amount:Math.round(subtotal*100),currency:store.currency||"NGN",reference,callback_url:`${origin}/s/${store.slug}/order-confirmation?reference=${encodeURIComponent(reference)}`,metadata:{order_id:order.id,store_id:store.id,store_slug:store.slug,customer_name:name.trim()}})});
+  result=await paystack.json();
+  if(!paystack.ok||!result.status||!result.data?.authorization_url)throw new Error(result.message||"Payment could not be started.");
+ }catch(error){
+  await admin.from("orders").delete().eq("id",order.id);
+  return NextResponse.json({error:error instanceof Error?error.message:"Payment could not be started. Please try again."},{status:502});
+ }
  return NextResponse.json({authorizationUrl:result.data.authorization_url});
 }
