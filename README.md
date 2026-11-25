@@ -10,7 +10,7 @@ A multi-tenant ecommerce SaaS that lets merchants create, customise, and publish
 - Public hosted storefronts at `/s/<store-slug>`, with custom subdomains and custom-domain support planned.
 - Platform-owner admin for merchants, plans, subscriptions, payments, usage, and support.
 - Tenant isolation enforced in PostgreSQL with Row Level Security.
-- Image uploads are converted to WebP and must be **strictly smaller than 100 KB**. Supabase Storage independently rejects files at or above 102,399 bytes.
+- Image uploads are converted to WebP and must be **strictly smaller than 100 KB**. Supabase Storage independently rejects files at or above 99,999 bytes.
 
 ## Stack
 
