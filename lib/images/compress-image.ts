@@ -1,4 +1,4 @@
-export const MAX_IMAGE_BYTES = 100 * 1024;
+export const MAX_IMAGE_BYTES = 100_000;
 const TARGET_BYTES = 94 * 1024;
 const MAX_DIMENSION = 2400;
 
