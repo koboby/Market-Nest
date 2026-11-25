@@ -198,7 +198,7 @@ export default function Home() {
       </section>
 
       <section className="section steps-section">
-        <div className="section-heading"><SectionLabel>IT'S EASIER THAN YOU THINK</SectionLabel><h2>From idea to <em>open for business.</em></h2></div>
+        <div className="section-heading"><SectionLabel>IT&apos;S EASIER THAN YOU THINK</SectionLabel><h2>From idea to <em>open for business.</em></h2></div>
         <div className="steps-grid">
           <article><span>01</span><div className="step-icon"><Store size={22} /></div><h3>Make it yours</h3><p>Create your account, name your store and choose a starting theme.</p></article>
           <article><span>02</span><div className="step-icon"><Palette size={22} /></div><h3>Make it beautiful</h3><p>Add your products, customise your pages and make every detail feel right.</p></article>
