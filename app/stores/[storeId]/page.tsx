@@ -3,7 +3,6 @@ import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
 import { ArrowLeft, ArrowRight, BarChart3, CreditCard, Globe2, ImagePlus, Layers3, Package, Palette, Settings2, Store, Users, Receipt } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
-import type { CSSProperties } from "react";
 
 export default async function StoreWorkspacePage({params}:{params:Promise<{storeId:string}>}) {
   const {storeId}=await params; const supabase=await createClient(); const {data:{user}}=await supabase.auth.getUser();
