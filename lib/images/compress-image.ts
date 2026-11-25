@@ -73,7 +73,7 @@ export async function compressImageUnder100KB(file: File): Promise<File> {
     height = Math.max(240, Math.round(height * 0.78));
   }
 
-  if (best && best.size <= MAX_IMAGE_BYTES) {
+  if (best && best.size < MAX_IMAGE_BYTES) {
     return new File([best], file.name.replace(/\.[^.]+$/, "") + ".webp", {
       type: "image/webp",
       lastModified: Date.now(),
