@@ -19,3 +19,4 @@
 .dashboard-shortcuts{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;padding-top:24px;border-top:1px solid #e5e7df}.dashboard-shortcuts>div{display:flex;align-items:center;gap:12px;padding:16px;background:#eeefe8;border-radius:9px;color:#66806b}.dashboard-shortcuts span{display:flex;flex-direction:column;gap:4px}.dashboard-shortcuts b{font-size:12px;color:#34483a}.dashboard-shortcuts small{font-size:10px;color:#828c83}
 .dashboard-error{padding:30px;background:#fff;border-radius:10px;color:#8a3e35}
 @media(max-width:700px){.dashboard-welcome{align-items:flex-start;flex-direction:column;padding:48px 0 36px}.dashboard-shortcuts{grid-template-columns:repeat(2,1fr)}.dashboard-user{max-width:55%;overflow:hidden;text-overflow:ellipsis}}
+.dashboard-admin-link{font-size:11px;font-weight:700;color:#4f7257;padding:8px 11px;border:1px solid #dce5dc;border-radius:6px}
