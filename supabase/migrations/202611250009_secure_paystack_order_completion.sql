@@ -2,7 +2,7 @@
 create or replace function private.complete_paid_order(p_reference text, p_payload jsonb default '{}'::jsonb)
 returns boolean language plpgsql security definer set search_path = ''
 as $$
-declare target_order public.orders%rowtype;
+declare target_order record;
 begin
  select * into target_order from public.orders where payment_reference=p_reference for update;
  if not found then return false; end if;
