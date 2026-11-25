@@ -5,7 +5,6 @@ import {ArrowLeft,CheckCircle2,CreditCard} from "lucide-react";
 import {createClient} from "@/lib/supabase/server";
 import BillingActions from "./billing-actions";
 import BillingCancel from "./billing-cancel";
-import "./confirmation/confirmation.css";
 export default async function BillingPage({params}:{params:Promise<{storeId:string}>}){
  const {storeId}=await params;const supabase=await createClient();const {data:{user}}=await supabase.auth.getUser();if(!user)redirect("/login");
  const {data:store}=await supabase.from("stores").select("id,name,currency").eq("id",storeId).maybeSingle();if(!store)notFound();
