@@ -7,7 +7,7 @@ Market Nest is a multi-tenant ecommerce SaaS that lets merchants subscribe to a 
 - Public marketing homepage, merchant authentication, onboarding and store workspace.
 - Product catalogue with editing, inventory, SKU, and product variants.
 - Collections for organising the storefront catalogue.
-- Visual storefront editor with section editing, drag-and-drop ordering, desktop/mobile preview, theme colours, draft saving and publishing.
+- Visual storefront editor with Boutique, Minimal and Editorial starting templates, section editing, drag-and-drop ordering, desktop/mobile preview, accent and background colours, draft saving and publishing.
 - Hosted storefronts at `/s/<store-slug>`, with shopping bag and customer checkout.
 - Paystack shopper payments with signed webhooks, server-side verification, paid-order processing and stock updates.
 - Merchant orders, customers, analytics, billing, settings, media library and custom-domain workspaces.
