@@ -4,7 +4,7 @@ import {createAdminClient} from "@/lib/supabase/admin";
 import PlatformAdmin from "./platform-admin";
 import "./platform.css";
 type StoreSummary={id:string;name:string;slug:string;status:string;created_at:string};
-type SubscriptionSummary={store_id:string;status:string;subscription_plans:{name:string;price_monthly:number}|null};
+type SubscriptionSummary={store_id:string;status:string;subscription_plans:{name:string;price_monthly:number}[]};
 export default async function PlatformPage(){
  const supabase=await createClient();const {data:{user}}=await supabase.auth.getUser();if(!user)redirect("/login");
  const allow=(process.env.PLATFORM_ADMIN_EMAILS??"").split(",").map(value=>value.trim().toLowerCase()).filter(Boolean);if(!user.email||!allow.includes(user.email.toLowerCase()))redirect("/dashboard");
@@ -20,6 +20,6 @@ export default async function PlatformPage(){
  ]);
  const paidRevenue=(paidOrders??[]).reduce((sum,order)=>sum+Number(order.total),0);
  const subscriptionsByStore=new Map(((subscriptionData??[]) as SubscriptionSummary[]).map(subscription=>[subscription.store_id,subscription]));
- const merchantStores=((storeData??[]) as StoreSummary[]).map(store=>{const subscription=subscriptionsByStore.get(store.id);return {...store,subscription:subscription?.status??"none",subscriptionPlan:subscription?.subscription_plans?.name??"No plan"};});
+ const merchantStores=((storeData??[]) as StoreSummary[]).map(store=>{const subscription=subscriptionsByStore.get(store.id);return {...store,subscription:subscription?.status??"none",subscriptionPlan:subscription?.subscription_plans?.[0]?.name??"No plan"};});
  return <main className="platform-shell"><header><a href="/dashboard">MARKET NEST</a><span>PLATFORM CONTROL</span></header><section className="platform-heading"><small>SUPER ADMIN</small><h1>Platform overview.</h1><p>Manage merchant plans and monitor the Market Nest ecosystem.</p></section><div className="platform-stats"><article><span>Stores</span><b>{storeCount??0}</b></article><article><span>Orders</span><b>{orders??0}</b></article><article><span>Active subscriptions</span><b>{subscriptions??0}</b></article><article><span>Paid revenue (NGN)</span><b>₦{paidRevenue.toLocaleString("en-NG",{maximumFractionDigits:0})}</b></article></div><PlatformAdmin plans={plans??[]} stores={merchantStores}/></main>;
 }
