@@ -12,6 +12,7 @@ export async function POST(request:Request){
   supabase.from("store_subscriptions").select("id,status").eq("store_id",storeId).in("status",["trialing","active","past_due"]).maybeSingle()
  ]);
  if(!store||!plan)return NextResponse.json({error:"Store or plan not found."},{status:404});
+ if(!user.email)return NextResponse.json({error:"Your account needs an email address to subscribe."},{status:400});
  if(existing?.status==="active")return NextResponse.json({error:"This store already has an active subscription."},{status:409});
  if(!plan.provider_plan_code)return NextResponse.json({error:"This plan is not connected to a Paystack recurring plan yet."},{status:409});
  const admin=createAdminClient();
